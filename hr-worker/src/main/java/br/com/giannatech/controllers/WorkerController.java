@@ -2,10 +2,10 @@ package br.com.giannatech.controllers;
 
 import java.util.List;
 
-import javax.persistence.EntityNotFoundException;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +19,10 @@ import br.com.giannatech.services.WorkerService;
 @RequestMapping(value = "/workers")
 public class WorkerController {
 
+	private static Logger logger = LoggerFactory.getLogger(WorkerController.class);
+	@Autowired
+	private Environment env;
+	
 	@Autowired
 	private WorkerService workerService;
 
@@ -28,13 +32,10 @@ public class WorkerController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Object> show(@PathVariable Long id) {
-		try {
-			var worker = workerService.findById(id);
-			return ResponseEntity.ok(worker);
-		}catch (EntityNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		}
+	public ResponseEntity<Worker> show(@PathVariable Long id) {
+		logger.info("PORT = " + env.getProperty("local.server.port"));
+
+		return ResponseEntity.ok(workerService.findById(id));
 
 	}
 
